@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <title>Sales Data Visualization</title>
@@ -13,55 +13,42 @@
 <body>
   <h1>Sales Data Visualization</h1>
   <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-    <label for="partNo">Part No:</label>
-    <input type="text" name="partNo" id="partNo">
-    <br>
+	<label for="partNo">Part No:</label>
+	<input type="text" name="partNo" id="partNo">
+	<br>
     <input type="submit" value="Generate Graphs">
   </form>
 
   <?php
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Include the SQL connection script
-    include 'sql.php';
-	include 'chart_functions.php';
-    // Get the user input
-    $partNo = $_POST['partNo'];
+        // Include the SQL connection script
+    include 'chart_functions.php';
+    include 'sql_functions.php';
 
-    // Construct the SQL query
-    $query = "SELECT YEAR(s.Date) AS Year,
-                     SUM(s.`Quantity Sold`) AS TotalQuantitySold,
-                     SUM(s.Cost) AS TotalCost,
-                     SUM(s.`Gross Margin`) AS SumOfGrossMargin
-              FROM sales s
-              WHERE s.`Part No` LIKE '%$partNo%'";
+    // Retrieve the data from the item_report function
+    $data = item_report($_POST['partNo']);
 
-    $query .= " GROUP BY YEAR(s.Date)
-                ORDER BY YEAR(s.Date)";
+    // Initialize arrays for chart data
+    $years = [];
+    $quantitySold = [];
+    $totalCost = [];
+    $grossMargin = [];
 
-    // Execute the SQL query
-    $result = $conn->query($query);
+    // Extract the data from the 3D array
+    foreach ($data as $yearData) {
+        $years[] = $yearData['Year'];
+        $quantitySold[] = $yearData['TotalQuantitySold'];
+        $totalCost[] = $yearData['TotalCost'];
+        $grossMargin[] = $yearData['GrossMargin'];
+    }
 
-    if ($result->num_rows > 0) {
-      // Initialize arrays for chart data
-      $years = [];
-      $quantitySold = [];
-      $totalCost = [];
-      $grossMargin = [];
+    // Generate the line charts using the extracted data
+    generateLineChart('quantitySoldChart', $years, $quantitySold, 'Quantity Sold');
+    generateLineChart('totalCostChart', $years, $totalCost, 'Total Cost');
+    generateLineChart('grossMarginChart', $years, $grossMargin, 'Gross Margin');
 
-      // Fetch and store the data
-      while ($row = $result->fetch_assoc()) {
-        $years[] = $row['Year'];
-        $quantitySold[] = $row['TotalQuantitySold'];
-        $totalCost[] = $row['TotalCost'];
-        $grossMargin[] = $row['SumOfGrossMargin'];
-      }
 
-      generateLineChart('quantitySoldChart', $years, $quantitySold, 'Quantity Sold');
-      generateLineChart('totalCostChart', $years, $totalCost, 'Total Cost');
-      generateLineChart('grossMarginChart', $years, $grossMargin, 'Gross Margin');
-
-            // Create a table with the data
-     echo "<h2>Table Data</h2>";
+	echo "<h2>Table Data</h2>";
 	echo "<table id='data-table'>
 			<thead>
 			  <tr>
@@ -72,16 +59,14 @@
 			  </tr>
 			</thead>
 			<tbody>";
-	mysqli_data_seek($result, 0); // Reset result pointer
-	while ($row = $result->fetch_assoc()) {
-	  echo "<tr>
-			  <td>".$row['Year']."</td>
-			  <td>".$row['TotalQuantitySold']."</td>
-			  <td>".$row['TotalCost']."</td>
-			  <td>".$row['SumOfGrossMargin']."</td>
-			</tr>";
+	foreach ($data as $row) {
+		echo "<tr>
+				<td>".$row['Year']."</td>
+				<td>".$row['TotalQuantitySold']."</td>
+				<td>".$row['TotalCost']."</td>
+				<td>".$row['GrossMargin']."</td>
+			  </tr>";
 	}
-	echo "</tbody></table>";
 
 	// Add a button to copy table data to clipboard
 	echo "<button id='copyButton' onclick='copyToClipboard()'>Copy Table Data</button>";
@@ -108,10 +93,6 @@
     } else {
       echo "<p>No data found for the selected criteria.</p>";
     }
-
-    // Close the database connection
-    $conn->close();
-  }
   ?>
 </body>
 </html>

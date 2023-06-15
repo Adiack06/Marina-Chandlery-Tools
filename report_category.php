@@ -46,76 +46,53 @@
   <?php
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Include the SQL connection script
-    include 'sql.php';
     include 'chart_functions.php';
+	include 'sql_functions.php';
 
     // Get the user input
-    $category = $_POST['category'];
-    $partDesc = $_POST['partDesc'];
-    $partNo = $_POST['partNo'];
+	
+	$data = category_report($_POST['partNo'],$_POST['category'],$_POST['partDesc']);
 
-    // Construct the SQL query
-    $query = "SELECT YEAR(s.Date) AS Year,
-                     SUM(s.`Quantity Sold`) AS TotalQuantitySold,
-                     SUM(s.Cost) AS TotalCost,
-                     SUM(s.`Gross Margin`) AS SumOfGrossMargin
-              FROM sales s
-              WHERE s.Category = '$category'";
 
-    if (!empty($partDesc)) {
-      $query .= " AND s.`Part Desc` LIKE '%$partDesc%'";
+// Initialize arrays for chart data
+    $years = [];
+    $quantitySold = [];
+    $totalCost = [];
+    $grossMargin = [];
+
+    // Extract the data from the 3D array
+    foreach ($data as $yearData) {
+        $years[] = $yearData['Year'];
+        $quantitySold[] = $yearData['TotalQuantitySold'];
+        $totalCost[] = $yearData['TotalCost'];
+        $grossMargin[] = $yearData['GrossMargin'];
     }
 
-    if (!empty($partNo)) {
-      $query .= " AND s.`Part No` LIKE '%$partNo%'";
-    }
+	generateLineChart('quantitySoldChart', $years, $quantitySold, 'Quantity Sold');
+	generateLineChart('totalCostChart', $years, $totalCost, 'Total Cost');
+	generateLineChart('grossMarginChart', $years, $grossMargin, 'Gross Margin');
 
-    $query .= " GROUP BY YEAR(s.Date)
-                ORDER BY YEAR(s.Date)";
-
-    // Execute the SQL query
-    $result = $conn->query($query);
-
-    if ($result->num_rows > 0) {
-      // Initialize arrays for chart data
-      $years = [];
-      $quantitySold = [];
-      $totalCost = [];
-      $grossMargin = [];
-
-      // Fetch and store the data
-      while ($row = $result->fetch_assoc()) {
-        $years[] = $row['Year'];
-        $quantitySold[] = $row['TotalQuantitySold'];
-        $totalCost[] = $row['TotalCost'];
-        $grossMargin[] = $row['SumOfGrossMargin'];
-      }
-
-      generateLineChart('quantitySoldChart', $years, $quantitySold, 'Quantity Sold');
-      generateLineChart('totalCostChart', $years, $totalCost, 'Total Cost');
-      generateLineChart('grossMarginChart', $years, $grossMargin, 'Gross Margin');
-
-      // Create a table with the data
-     echo "<h2>Table Data</h2>";
+	// Create a table with the data
+	echo "<h2>Table Data</h2>";
 	echo "<table id='data-table'>
-			<thead>
-			  <tr>
-				<th>Year</th>
-				<th>Total Quantity Sold</th>
-				<th>Total Cost</th>
-				<th>Gross Margin</th>
-			  </tr>
-			</thead>
-			<tbody>";
-	mysqli_data_seek($result, 0); // Reset result pointer
-	while ($row = $result->fetch_assoc()) {
-	  echo "<tr>
-			  <td>".$row['Year']."</td>
-			  <td>".$row['TotalQuantitySold']."</td>
-			  <td>".$row['TotalCost']."</td>
-			  <td>".$row['SumOfGrossMargin']."</td>
-			</tr>";
+		  <thead>
+			<tr>
+			  <th>Year</th>
+			  <th>Total Quantity Sold</th>
+			  <th>Total Cost</th>
+			  <th>Gross Margin</th>
+			</tr>
+		  </thead>
+		  <tbody>";
+	foreach ($data as $row) {
+		echo "<tr>
+				<td>".$row['Year']."</td>
+				<td>".$row['TotalQuantitySold']."</td>
+				<td>".$row['TotalCost']."</td>
+				<td>".$row['GrossMargin']."</td>
+			  </tr>";
 	}
+
 	echo "</tbody></table>";
 
 	// Add a button to copy table data to clipboard
@@ -123,30 +100,27 @@
 
 	// JavaScript function to copy table data to clipboard
 	echo "<script>
-			function copyToClipboard() {
-			  var table = document.getElementById('data-table');
-			  var range = document.createRange();
-			  range.selectNode(table);
-			  window.getSelection().removeAllRanges();
-			  window.getSelection().addRange(range);
+		  function copyToClipboard() {
+			var table = document.getElementById('data-table');
+			var range = document.createRange();
+			range.selectNode(table);
+			window.getSelection().removeAllRanges();
+			window.getSelection().addRange(range);
 
-			  var successful = document.execCommand('copy');
-			  if (successful) {
-				alert('Table data copied to clipboard!');
-			  } else {
-				alert('Failed to copy table data to clipboard.');
-			  }
-
-			  window.getSelection().removeAllRanges();
+			var successful = document.execCommand('copy');
+			if (successful) {
+			  alert('Table data copied to clipboard!');
+			} else {
+			  alert('Failed to copy table data to clipboard.');
 			}
-		  </script>";
-    } else {
+
+			window.getSelection().removeAllRanges();
+		  }
+		</script>";
+    } 
+	else {
       echo "<p>No data found for the selected criteria.</p>";
     }
-
-    // Close the database connection
-    $conn->close();
-  }
   ?>
 </body>
 </html>
