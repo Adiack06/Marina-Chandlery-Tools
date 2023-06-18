@@ -35,7 +35,7 @@ function item_report($partNo) {
                 'GrossMargin' => $grossMargin
             );
 
-            // Add the year's data to the 3D array
+            // Add the year's data to the array
             $data[] = $yearData;
         }
     }
@@ -43,9 +43,10 @@ function item_report($partNo) {
     // Close the database connection
     $conn->close();
 
-    // Return the 3D array to the main program
+    // Return the array to the main program
     return $data;
 }
+
 function category_report($partNo , $category , $partDesc) {
 	include 'sql.php';
 	    // Construct the SQL query
@@ -74,6 +75,14 @@ function category_report($partNo , $category , $partDesc) {
     $data = array();
 
     if ($result->num_rows > 0) {
+        // Add column names as the first "row" in the data array
+        $data[] = array(
+            'Year' => 'Year',
+            'TotalQuantitySold' => 'Total Quantity Sold',
+            'TotalCost' => 'Total Cost',
+            'GrossMargin' => 'Gross Margin'
+        );
+
         // Fetch and store the data
         while ($row = $result->fetch_assoc()) {
             $year = $row['Year'];

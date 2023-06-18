@@ -43,37 +43,35 @@
     <input type="submit" value="Generate Graphs">
   </form>
 
-  <?php
-  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Include the SQL connection script
-    include 'chart_functions.php';
-	include 'sql_functions.php';
+	<?php
+	if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+		// Include the SQL connection script
+		include 'chart_functions.php';
+		include 'sql_functions.php';
 
-    // Get the user input
-	
-	$data = category_report($_POST['partNo'],$_POST['category'],$_POST['partDesc']);
+		// Retrieve the data from the item_report function
+		$data = category_report($_POST['partNo'],$_POST['category'],$_POST['partDesc']);
 
+		// Get the names of the columns in the array
+		$columnNames = array_keys($data[0]);
 
-// Initialize arrays for chart data
-    $rows = [];
-    $quantitySold = [];
-    $totalCost = [];
-    $grossMargin = [];
+		// Get the values from the first column for labels
+		$labels = array_column($data, $columnNames[0]);
+		
+		// Exclude the first column from the chart generation
+		$columnNames = array_slice($columnNames, 1);
 
-    // Extract the data from the 3D array
-    foreach ($data as $yearData) {
-        $rows[] = $yearData['Year'];
-        $quantitySold[] = $yearData['TotalQuantitySold'];
-        $totalCost[] = $yearData['TotalCost'];
-        $grossMargin[] = $yearData['GrossMargin'];
-    }
+		// Loop through the columns (except the first) and generate a line chart for each one
+		foreach ($columnNames as $columnName) {
+			$dataForChart = array_column($data, $columnName);
 
-	generateLineChart('quantitySoldChart', $rows, $quantitySold, 'Quantity Sold');
-	generateLineChart('totalCostChart', $rows, $totalCost, 'Total Cost');
-	generateLineChart('grossMarginChart', $rows, $grossMargin, 'Gross Margin');
-
-	copy_table($data);
+			// Generate the line chart
+			generateLineChart($columnName, $labels, $dataForChart, $columnName);
+		}
+		copy_table($data);
 	}
-?>
+
+	
+    ?>
 </body>
 </html>
