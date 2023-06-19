@@ -1,31 +1,52 @@
 <?php
 function item_report($partNo) {
-    // Include the SQL connection script
-    include 'sql.php';
+	include 'sql.php';
 
-    // Construct the SQL query
-    $query = "SELECT YEAR(s.Date) AS Year,
-                    SUM(s.`Quantity Sold`) AS TotalQuantitySold,
-                    SUM(s.Cost) AS TotalCost,
-                    SUM(s.`Gross Margin`) AS SumOfGrossMargin
-              FROM sales s
-              WHERE s.`Part No` LIKE '%$partNo%'
-              GROUP BY YEAR(s.Date)
-              ORDER BY YEAR(s.Date)";
 
-    // Execute the SQL query
-    $result = $conn->query($query);
+	// Check the connection
+	if ($conn->connect_error) {
+		die("Connection failed: " . $conn->connect_error);
+	}
 
-    // Initialize the 3D array for storing the data
-    $data = array();
+	// Construct the SQL query with a placeholder
+	$query = "SELECT YEAR(s.Date) AS Year,
+					 SUM(s.`Quantity Sold`) AS TotalQuantitySold,
+					 SUM(s.Cost) AS TotalCost,
+					 SUM(s.`Gross Margin`) AS GrossMargin
+			 FROM sales s
+			 WHERE s.`Part No` LIKE CONCAT('%', ?, '%')
+			 GROUP BY YEAR(s.Date)
+			 ORDER BY YEAR(s.Date)";
 
+	// Prepare the statement
+	$stmt = $conn->prepare($query);
+
+	// Bind the sanitized input value
+	$stmt->bind_param("s", $partNo);
+
+	// Sanitize the input
+	$partNo = $conn->real_escape_string($_POST['partNo']);
+
+	// Execute the prepared statement
+	$stmt->execute();
+
+	// Get the result
+	$result = $stmt->get_result();
+
+	// Initialize the array for storing the data
+	$data = [];
+
+
+	// Close the prepared statement and database connection
+	$stmt->close();
+	$conn->close();
     if ($result->num_rows > 0) {
         // Fetch and store the data
         while ($row = $result->fetch_assoc()) {
             $year = $row['Year'];
             $totalQuantitySold = $row['TotalQuantitySold'];
             $totalCost = $row['TotalCost'];
-            $grossMargin = $row['SumOfGrossMargin'];
+            $grossMargin = $row['GrossMargin'];
 
             // Create an associative array for each year's data
             $yearData = array(
@@ -40,29 +61,32 @@ function item_report($partNo) {
         }
     }
 
-    // Close the database connection
-    $conn->close();
-
     // Return the array to the main program
     return $data;
 }
+function category_report($partNo, $category, $partDesc) {
+    // Include the SQL connection script
+    include 'sql.php';
 
-function category_report($partNo , $category , $partDesc) {
-	include 'sql.php';
-	    // Construct the SQL query
+    // Sanitize the input parameters
+    $partNo = addslashes($partNo);
+    $category = addslashes($category);
+    $partDesc = addslashes($partDesc);
+
+    // Construct the SQL query string
     $query = "SELECT YEAR(s.Date) AS Year,
                      SUM(s.`Quantity Sold`) AS TotalQuantitySold,
                      SUM(s.Cost) AS TotalCost,
-                     SUM(s.`Gross Margin`) AS SumOfGrossMargin
+                     SUM(s.`Gross Margin`) AS GrossMargin
               FROM sales s
               WHERE s.Category = '$category'";
 
     if (!empty($partDesc)) {
-      $query .= " AND s.`Part Desc` LIKE '%$partDesc%'";
+        $query .= " AND s.`Part Desc` LIKE '%$partDesc%'";
     }
 
     if (!empty($partNo)) {
-      $query .= " AND s.`Part No` LIKE '%$partNo%'";
+        $query .= " AND s.`Part No` LIKE '%$partNo%'";
     }
 
     $query .= " GROUP BY YEAR(s.Date)
@@ -71,8 +95,15 @@ function category_report($partNo , $category , $partDesc) {
     // Execute the SQL query
     $result = $conn->query($query);
 
-    // Initialize the 3D array for storing the data
-    $data = array();
+    // Initialize the array for storing the data
+    $data = [];
+
+    // Fetch the result into the data array
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+
+    $conn->close();
 
     if ($result->num_rows > 0) {
         // Add column names as the first "row" in the data array
@@ -104,7 +135,6 @@ function category_report($partNo , $category , $partDesc) {
     }
 
     // Close the database connection
-    $conn->close();
 
     // Return the 3D array to the main program
     return $data;
