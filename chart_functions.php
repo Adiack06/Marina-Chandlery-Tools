@@ -39,9 +39,8 @@ function generateLineChart($chartId, $labels, $data, $datasetLabel) {
         </script>";
 }
 
-function generatePieChart($chartId, $labels, $data, $chartTitle) {
-  $colors = generateRandomColors(count($labels));
-
+function generatePieChart($chartId, $labels, $data, $datasetLabel) {
+  $color = generateRandomColors(count($data));
   echo "<canvas id='$chartId'></canvas>";
   echo "<script>
           var ctx = document.getElementById('$chartId').getContext('2d');
@@ -50,25 +49,27 @@ function generatePieChart($chartId, $labels, $data, $chartTitle) {
             data: {
               labels: " . json_encode($labels) . ",
               datasets: [{
-                label: '$chartTitle',
+                label: '$datasetLabel',
                 data: " . json_encode($data) . ",
-                backgroundColor: " . json_encode($colors) . ",
-                borderWidth: 1
+                fill: false,
+                backgroundColor: " . json_encode($color) . ",
+                tension: 0.1
               }]
             },
             options: {
               responsive: true,
-              plugins: {
-                title: {
+              scales: {
+                x: {
                   display: true,
-                  text: '$chartTitle'
+                },
+                y: {
+                  display: true,
                 }
               }
             }
           });
         </script>";
 }
-
 function generateRandomColors($count) {
   $colors = [];
 

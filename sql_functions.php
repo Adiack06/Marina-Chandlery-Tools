@@ -107,12 +107,6 @@ function category_report($partNo, $category, $partDesc) {
 
     if ($result->num_rows > 0) {
         // Add column names as the first "row" in the data array
-        $data[] = array(
-            'Year' => 'Year',
-            'TotalQuantitySold' => 'Total Quantity Sold',
-            'TotalCost' => 'Total Cost',
-            'GrossMargin' => 'Gross Margin'
-        );
 
         // Fetch and store the data
         while ($row = $result->fetch_assoc()) {
@@ -159,23 +153,25 @@ function copy_table($data) {
 			}
 		</script>";
 	echo "<button onclick='copyToClipboard()'>Copy Table Data</button>";
-
+	
+	$columnNames = array_keys($data[0]);
+	
 	// Create a table with the data
 	echo "<h2>Table Data</h2>";
 	echo "<table id='data-table'>
 			<thead>
-			  <tr>
-				<th>Year</th>
-				<th>Total Quantity Sold</th>
-				<th>Total Cost</th>
-				<th>Gross Margin</th>
-			  </tr>
-			</thead>
-			<tbody>";
+			  <tr>";
+	foreach ($columnNames as $columnName) {
+		echo "<th>".$columnName."</th>";
+	}
+	echo"</tr>
+	</thead>
+	<tbody>";
 
 	if (!empty($data)) {
 			foreach ($data as $row) {
 				echo "<tr>
+						
 						<td>".$row['Year']."</td>
 						<td>".$row['TotalQuantitySold']."</td>
 						<td>".$row['TotalCost']."</td>
