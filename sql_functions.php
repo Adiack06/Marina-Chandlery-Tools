@@ -133,6 +133,62 @@ function category_report($partNo, $category, $partDesc) {
     // Return the 3D array to the main program
     return $data;
 }
+function category_charged_report() {
+	include 'sql.php';
+
+
+	// Check the connection
+	if ($conn->connect_error) {
+		die("Connection failed: " . $conn->connect_error);
+	}
+
+	// Construct the SQL query with a placeholder
+	$query = "SELECT Category as 'index', COUNT('dates.idUniqueID') as 'boats', SUM(`boat info`.`Length (mtrs)`*(dates.`Date left`-`Date arrived`)) as 'meter days'
+			FROM ayc.dates 
+			LEFT JOIN `boat info` ON dates.ID = `boat info`.ID 
+			WHERE `Date left` >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) 
+			GROUP BY Category 
+			ORDER BY Category ASC;";
+
+	// Prepare the statement
+	$stmt = $conn->prepare($query);
+
+	// Execute the prepared statement
+	$stmt->execute();
+
+	// Get the result
+	$result = $stmt->get_result();
+
+	// Initialize the array for storing the data
+	$data = [];
+
+
+	// Close the prepared statement and database connection
+	$stmt->close();
+	$conn->close();
+    if ($result->num_rows > 0) {
+        // Fetch and store the data
+        while ($row = $result->fetch_assoc()) {
+            $index = $row['index'];
+            $boats = $row['boats'];
+            $meter_days = $row['meter days'];
+
+            // Create an associative array for each year's data
+            $CategoryData = array(
+                'index' => $index,
+                'boats' => $boats,
+                'meter_days' => $meter_days,
+            );
+
+            // Add the year's data to the array
+            $data[] = $CategoryData;
+        }
+    }
+
+    // Return the array to the main program
+    return $data;
+}
+
 function copy_table($data) {
 	echo "<script>
 			function copyToClipboard() {
@@ -152,38 +208,37 @@ function copy_table($data) {
 				window.getSelection().removeAllRanges();
 			}
 		</script>";
+
 	echo "<button onclick='copyToClipboard()'>Copy Table Data</button>";
-	
+
 	$columnNames = array_keys($data[0]);
-	
+
 	// Create a table with the data
 	echo "<h2>Table Data</h2>";
 	echo "<table id='data-table'>
 			<thead>
-			  <tr>";
+				<tr>";
 	foreach ($columnNames as $columnName) {
 		echo "<th>".$columnName."</th>";
 	}
-	echo"</tr>
-	</thead>
-	<tbody>";
+	echo "</tr>
+		</thead>
+		<tbody>";
 
 	if (!empty($data)) {
-			foreach ($data as $row) {
-				echo "<tr>
-						
-						<td>".$row['Year']."</td>
-						<td>".$row['TotalQuantitySold']."</td>
-						<td>".$row['TotalCost']."</td>
-						<td>".$row['GrossMargin']."</td>
-					  </tr>";
+		foreach ($data as $row) {
+			echo "<tr>";
+			foreach ($row as $value) {
+				echo "<td>".$value."</td>";
 			}
-		} else {
-			echo "<tr>
-					<td colspan='4'>No data found for the selected criteria.</td>
-				  </tr>";
+			echo "</tr>";
 		}
+	} else {
+		echo "<tr>
+				<td colspan='".count($columnNames)."'>No data found for the selected criteria.</td>
+			</tr>";
+	}
 
-		echo "</tbody></table>";
+	echo "</tbody></table>";
 }
 ?>
