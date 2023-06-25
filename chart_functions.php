@@ -1,9 +1,10 @@
 <?php
 function generateLineChart($chartId, $labels, $data, $datasetLabel) {
   $color = generateRandomColors("1");
-  echo "<canvas id='$chartId'></canvas>";
+  $uniqueChartId = $chartId . "_" . uniqid(); // Append a unique identifier to the chart ID
+  echo "<canvas id='$uniqueChartId'></canvas>";
   echo "<script>
-          var ctx = document.getElementById('$chartId').getContext('2d');
+          var ctx = document.getElementById('$uniqueChartId').getContext('2d');
           var $chartId = new Chart(ctx, {
             type: 'line',
             data: {
@@ -41,9 +42,10 @@ function generateLineChart($chartId, $labels, $data, $datasetLabel) {
 
 function generatePieChart($chartId, $labels, $data, $datasetLabel) {
   $color = generateRandomColors(count($data));
-  echo "<canvas id='$chartId'></canvas>";
+  $uniqueChartId = $chartId . "_" . uniqid(); // Append a unique identifier to the chart ID
+  echo "<canvas id='$uniqueChartId'></canvas>";
   echo "<script>
-          var ctx = document.getElementById('$chartId').getContext('2d');
+          var ctx = document.getElementById('$uniqueChartId').getContext('2d');
           var $chartId = new Chart(ctx, {
             type: 'pie',
             data: {
@@ -70,6 +72,40 @@ function generatePieChart($chartId, $labels, $data, $datasetLabel) {
           });
         </script>";
 }
+
+function generateBarChart($chartId, $labels, $data, $datasetLabel) {
+  $color = generateRandomColors(count($data));
+  $uniqueChartId = $chartId . "_" . uniqid(); // Append a unique identifier to the chart ID
+  echo "<canvas id='$uniqueChartId'></canvas>";
+  echo "<script>
+          var ctx = document.getElementById('$uniqueChartId').getContext('2d');
+          var $chartId = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: " . json_encode($labels) . ",
+              datasets: [{
+                label: '$datasetLabel',
+                data: " . json_encode($data) . ",
+                fill: false,
+                backgroundColor: " . json_encode($color) . ",
+                tension: 0.1
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                x: {
+                  display: true,
+                },
+                y: {
+                  display: true,
+                }
+              }
+            }
+          });
+        </script>";
+}
+
 function generateRandomColors($count) {
   $colors = [];
 
