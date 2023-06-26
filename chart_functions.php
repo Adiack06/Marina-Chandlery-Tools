@@ -74,7 +74,6 @@ function generatePieChart($chartId, $labels, $data, $datasetLabel) {
 }
 
 function generateBarChart($chartId, $labels, $data, $datasetLabel) {
-  $color = generateRandomColors(count($data));
   $uniqueChartId = $chartId . "_" . uniqid(); // Append a unique identifier to the chart ID
   echo "<canvas id='$uniqueChartId'></canvas>";
   echo "<script>
@@ -87,7 +86,39 @@ function generateBarChart($chartId, $labels, $data, $datasetLabel) {
                 label: '$datasetLabel',
                 data: " . json_encode($data) . ",
                 fill: false,
-                backgroundColor: " . json_encode($color) . ",
+                backgroundColor:  'rgb(128, 128, 128)',
+                tension: 0.1
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                x: {
+                  display: true,
+                },
+                y: {
+                  display: true,
+                }
+              }
+            }
+          });
+        </script>";
+}
+function generateDoughnutChart($chartId, $labels, $data, $datasetLabel) {
+  $uniqueChartId = $chartId . "_" . uniqid(); // Append a unique identifier to the chart ID
+  $color = generateRandomColors(count($data));
+  echo "<canvas id='$uniqueChartId'></canvas>";
+  echo "<script>
+          var ctx = document.getElementById('$uniqueChartId').getContext('2d');
+          var $chartId = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+              labels: " . json_encode($labels) . ",
+              datasets: [{
+                label: '$datasetLabel',
+                data: " . json_encode($data) . ",
+                fill: false,
+                backgroundColor:" . json_encode($color) . ",
                 tension: 0.1
               }]
             },

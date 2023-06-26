@@ -241,7 +241,59 @@ function new_boats_report() {
     // Return the array to the main program
     return $data;
 }
+function vists_country_report() {
+	include 'sql.php';
 
+
+	// Check the connection
+	if ($conn->connect_error) {
+		die("Connection failed: " . $conn->connect_error);
+	}
+
+	// Construct the SQL query with a placeholder
+	$query = "SELECT `Home Country`, COUNT('dates.idUniqueID') as 'boats'
+			FROM ayc.dates 
+			LEFT JOIN `boat info` ON dates.ID = `boat info`.ID 
+			WHERE `Date left` >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) 
+			GROUP BY `Home Country`
+			ORDER BY `Home Country` ASC;";
+
+	// Prepare the statement
+	$stmt = $conn->prepare($query);
+
+	// Execute the prepared statement
+	$stmt->execute();
+
+	// Get the result
+	$result = $stmt->get_result();
+
+	// Initialize the array for storing the data
+	$data = [];
+
+
+	// Close the prepared statement and database connection
+	$stmt->close();
+	$conn->close();
+    if ($result->num_rows > 0) {
+        // Fetch and store the data
+        while ($row = $result->fetch_assoc()) {
+            $Home_Country = $row['Home Country'];
+            $boats = $row['boats'];
+
+            // Create an associative array for each year's data
+            $Daydata = array(
+                'Home_Country' => $Home_Country,
+                'boats' => $boats,
+            );
+
+            // Add the year's data to the array
+            $data[] = $Daydata;
+        }
+    }
+
+    // Return the array to the main program
+    return $data;
+}
 function copy_table($data) {
 	echo "<script>
 			function copyToClipboard() {

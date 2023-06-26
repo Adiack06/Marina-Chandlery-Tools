@@ -49,7 +49,6 @@
 	reset($dataForChart);
 	// Retrieve the data from the item_report function
 	$data = new_boats_report();
-	var_dump($data);
 	// Get the names of the columns in the array
 	$columnNames = array_keys($data[0]);
 
@@ -69,6 +68,33 @@
 	}
 	copy_table($data);
 
+	//Third report
+
+
+	reset($data);
+	reset($labels);
+	reset($columnNames);
+	reset($dataForChart);
+	// Retrieve the data from the item_report function
+	$data = vists_country_report();
+	// Get the names of the columns in the array
+	$columnNames = array_keys($data[0]);
+
+	// Get the values from the first column for labels
+	$labels = array_column($data, $columnNames[0]);
+	
+	// Exclude the first column from the chart generation
+	$columnNames = array_slice($columnNames, 1);
+
+	// Loop through the columns (except the first) and generate a line chart for each one
+	foreach ($columnNames as $columnName) {
+		$dataForChart = array_column($data, $columnName);
+
+		// Generate the line chart
+		generateDoughnutChart($columnName, $labels, $dataForChart, $columnName
+		);
+	}
+	copy_table($data);
 	
     ?>
 </body>
