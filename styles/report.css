@@ -1,0 +1,95 @@
+canvas {
+      display: block;
+      margin: 20px 0;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+.graph-container {
+	max-height: 80vh; /* Adjust the maximum height as needed */
+	margin-top: 2%;
+	margin-bottem: 2%;
+}
+body {
+	margin-right: 10%;
+	margin-left: 10%;
+	margin-top: 1%;
+	margin-bottem: 2%;
+	background-color: HSL(209, 31%, 83%);
+	font-family: 'Trebuchet MS', sans-serif;
+	color: HSL(0, 0%, 23%);
+}
+
+button,
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+  background-color: rgba(59, 59, 59, 0.2);
+  border-radius: 8px;
+  border-width: 0;
+  color: #333333;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 10px 12px;
+  text-align: center;
+  transition: all 200ms;
+  vertical-align: baseline;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  margin-top: 1%;
+  margin-bottem: 2%;
+}
+
+select {
+  background-color: rgba(59, 59, 59, 0.2);
+  border-radius: 8px;
+  border-width: 0;
+  color: #333333;
+  display: block;
+  font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  margin: 0;
+  padding: 10px 12px;
+  transition: all 200ms;
+  width: 25%;
+  min-width: 290px;
+  box-sizing: border-box;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="select"],
+textarea 
+{
+  background-color: rgba(59, 59, 59, 0.2);
+  border-radius: 8px;
+  border-width: 0;
+  color: #333333;
+  display: block;
+  font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  margin: 0;
+  padding: 10px 12px;
+  transition: all 200ms;
+  width: 25%;
+  min-width: 290px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+//https://coolors.co/2976ae-69bc49-c6d4e1-3b3b3b-bc4e4e

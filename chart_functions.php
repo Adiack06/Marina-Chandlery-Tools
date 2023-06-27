@@ -86,7 +86,10 @@ function generateBarChart($chartId, $labels, $data, $datasetLabel) {
                 label: '$datasetLabel',
                 data: " . json_encode($data) . ",
                 fill: false,
-                backgroundColor:  'rgb(128, 128, 128)',
+                backgroundColor:  'rgba(214,214,161,0.7)',
+				borderColor: 'rgba(255, 255, 255, 1)',
+                borderWidth: 2,
+
                 tension: 0.1
               }]
             },
@@ -141,7 +144,7 @@ function generateRandomColors($count) {
   $colors = [];
 
   for ($i = 0; $i < $count; $i++) {
-    $color = "rgb(" . rand(0, 255) . ", " . rand(0, 255) . ", " . rand(0, 255) . ")";
+    $color = "rgba(" . rand(0, 255) . ", " . rand(0, 255) . ", " . rand(0, 255) . ",0.7)";
     $colors[] = $color;
   }
 

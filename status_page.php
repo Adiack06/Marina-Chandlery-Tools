@@ -1,17 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Sales Data Visualization</title>
+  <title>Marina Information</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    canvas {
-      display: block;
-      margin: 20px 0;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="styles/report.css">
 </head>
 <body>
-  <h1>Sales Data Visualization</h1>
+  <h1>Marina Information</h1>
 
 	<?php
 	// Include the SQL connection script
@@ -31,12 +26,16 @@
 	$columnNames = array_slice($columnNames, 1);
 
 	// Loop through the columns (except the first) and generate a line chart for each one
+	echo '<div class="grid-container">';
 	foreach ($columnNames as $columnName) {
 		$dataForChart = array_column($data, $columnName);
 
 		// Generate the line chart
+		echo '<div class="graph-container">';
 		generatePieChart($columnName, $labels, $dataForChart, $columnName);
+		echo '</div>';
 	}
+	echo '</div>';
 	copy_table($data);
 
 
@@ -59,13 +58,16 @@
 	$columnNames = array_slice($columnNames, 1);
 
 	// Loop through the columns (except the first) and generate a line chart for each one
+	echo '<div class="grid-container">';
 	foreach ($columnNames as $columnName) {
 		$dataForChart = array_column($data, $columnName);
 
 		// Generate the line chart
-		generateBarChart($columnName, $labels, $dataForChart, $columnName
-		);
+		echo '<div class="graph-container">';
+		generateBarChart($columnName, $labels, $dataForChart, $columnName);
+		echo '</div>';
 	}
+	echo '</div>';
 	copy_table($data);
 
 	//Third report
@@ -87,13 +89,16 @@
 	$columnNames = array_slice($columnNames, 1);
 
 	// Loop through the columns (except the first) and generate a line chart for each one
+	echo '<div class="grid-container">';
 	foreach ($columnNames as $columnName) {
 		$dataForChart = array_column($data, $columnName);
 
 		// Generate the line chart
-		generateDoughnutChart($columnName, $labels, $dataForChart, $columnName
-		);
+		echo '<div class="graph-container">';
+		generateDoughnutChart($columnName, $labels, $dataForChart, $columnName);
+		echo '</div>';
 	}
+	echo '</div>';
 	copy_table($data);
 	
     ?>

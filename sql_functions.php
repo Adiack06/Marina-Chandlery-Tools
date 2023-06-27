@@ -319,7 +319,7 @@ function copy_table($data) {
 	$columnNames = array_keys($data[0]);
 
 	// Create a table with the data
-	echo "<h2>Table Data</h2>";
+	/*echo "<h2>Table Data</h2>";
 	echo "<table id='data-table'>
 			<thead>
 				<tr>";
@@ -344,6 +344,6 @@ function copy_table($data) {
 			</tr>";
 	}
 
-	echo "</tbody></table>";
+	echo "</tbody></table>";*/
 }
 ?>

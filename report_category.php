@@ -3,12 +3,7 @@
 <head>
   <title>Sales Data Visualization</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    canvas {
-      display: block;
-      margin: 20px 0;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="styles/report.css">
 </head>
 <body>
   <h1>Sales Data Visualization</h1>

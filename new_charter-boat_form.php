@@ -2,63 +2,7 @@
 <html>
 <head>
   <title>Charter Boat Registration Form</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: navy;
-      color: white;
-      margin: 0;
-      padding: 0;
-    }
-    
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    
-    .logo {
-      float: left;
-      margin-right: 20px;
-    }
-    
-    h1 {
-      margin-top: 0;
-    }
-    
-    .explainer {
-      margin-bottom: 20px;
-    }
-    
-    .form-group {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 20px;
-    }
-    
-    .form-group label {
-      font-weight: bold;
-    }
-    
-    .form-group input,
-    .form-group textarea {
-      width: 70%;
-      padding: 5px;
-    }
-    
-    .form-group textarea {
-      height: 100px;
-    }
-    
-    .accent-color {
-      color: darkgreen;
-    }
-    
-    .submit-button {
-      margin-top: 20px;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="styles/form.css">
 </head>
 <body>
   <div class="container">
